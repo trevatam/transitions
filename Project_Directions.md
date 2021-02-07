@@ -1,4 +1,4 @@
-Project Directions
+Identifying Neighborhood Transitions
 ================
 Treva Tam
 2/6/2021
@@ -40,11 +40,11 @@ In this project I will:
 
 <br>
 
-#### **Data**
+### **Data**
 
 I use 1990, 2000, and 2010 Census data drawn from Social Explorer.
 
-#### **Sampling**
+### **Sampling**
 
 *Which southern metropolitan areas do we include? What is the criteria
 of inclusion?*
@@ -112,7 +112,7 @@ that are present in them.
 
 <br>
 
-#### **Classification**
+### **Classification**
 
 *How do I classify neighborhoods (tracts) within each of metro? What is
 the exact criteria to delineate the conceptual racial-ethnic categories
@@ -383,7 +383,7 @@ in each year.
 
 <br>
 
-#### **Neighborhood Transition Pathways**
+### **Neighborhood Transition Pathways**
 
 Now that I’ve classified each tract in each census year, I want to
 combine the neighborhood types into one dataset to chart the
