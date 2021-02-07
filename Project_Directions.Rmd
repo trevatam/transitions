@@ -2,7 +2,7 @@
 title: "Project Directions"
 author: "Treva Tam"
 date: "2/6/2021"
-output: html_document
+output: rmarkdown::github_document
 ---
 
 ```{r setup}
