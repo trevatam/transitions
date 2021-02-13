@@ -3,29 +3,6 @@ Identifying Neighborhood Transitions
 Treva Tam
 2/6/2021
 
-    rm(list=ls())
-    library(dplyr)
-
-    ## 
-    ## Attaching package: 'dplyr'
-
-    ## The following objects are masked from 'package:stats':
-    ## 
-    ##     filter, lag
-
-    ## The following objects are masked from 'package:base':
-    ## 
-    ##     intersect, setdiff, setequal, union
-
-    library(data.table)
-
-    ## 
-    ## Attaching package: 'data.table'
-
-    ## The following objects are masked from 'package:dplyr':
-    ## 
-    ##     between, first, last
-
 **Research Question:** *What neighborhood patterns of Racial-Ethnic
 change have occured in the South from 1990 to 2010?*
 
