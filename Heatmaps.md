@@ -1,4 +1,4 @@
-First Round of Heatmaps
+Heatmaps
 ================
 
 **Goal:** To create some cool heatmaps of the odds ratios of
@@ -6,79 +6,71 @@ neighborhood transitions
 
 Using the following packages:
 
-    rm(list=ls())
-
     library(corrplot)
-
-    ## corrplot 0.84 loaded
-
     library(reshape2)
     library(ggplot2)
     library(plyr)
     library(zoo)
-
-    ## 
-    ## Attaching package: 'zoo'
-
-    ## The following objects are masked from 'package:base':
-    ## 
-    ##     as.Date, as.Date.numeric
-
     library(RColorBrewer)
 
-### Steps to creating a heat map for 1990-2000
+<br>
 
-\\
+Steps for creating a heat map for 1990-2000
+-------------------------------------------
 
-**Step One:** Use the data from the previous analysis to create the
-neighborhood transition matrix.
+**Step One:** Create a neighborhood transition matrix using the odds
+ratios obtained through the loglinear analysis.
 
-    m <- matrix(c(0.1234, 0, 0, 0.0072, 0.0134, 0.0332, 0, 0, 0, 0.0022, 0.0048, 0.004, 0.0014, 0, 0.0468, 0, 0.001, 0, 0, 0.0042, 0.0004, 0, 0, 0.0006, 0, 0.0024, 0, 0, 0.0466, 0, 0.0006, 0, 0.0004, 0, 0.0008, 0, 0, 0.0002, 0, 0.0086, 0.0028, 0, 0.0502, 0.0004, 0.003, 0.0008, 0.0002, 0, 0.0064, 0.0122, 0.0002, 0.0022, 0.0026, 0, 0.0046, 0, 0.0466, 0.0022, 0.0004, 0.0002, 0.0004, 0.0044, 0, 0.0112, 0.0024, 0.0196, 0, 0, 0.0034, 0.0032, 0.101, 0, 0, 0, 0.001, 0.0234, 0.0164, 0.0086, 0, 0.0008, 0.0012, 0.0002, 0, 0, 0.0178, 0.001, 0, 0.0006, 0.0002, 0, 0.0004, 0, 0.0004, 0.0002, 0, 0, 0, 0.0044, 0.0062, 0.0008, 0, 0, 0, 0.0006, 0, 0, 0.004, 0, 0, 0, 0.0002, 0.0002, 0.0024, 0, 0, 0, 0, 0.0002, 0.0002, 0.0004, 0.0004, 0.0026, 0, 0.0038, 0.0004, 0, 0.0122, 0.0002, 0.0006, 0.0022, 0.0008, 0.0036, 0, 0.0116, 0, 0.0054, 0.0008, 0.0026, 0, 0.0026, 0.0584, 0.0006, 0.0246, 0.0014, 0, 0.0026, 0, 0.0144, 0.0078, 0.0004, 0.001, 0.0046, 0.0026, 0.0006, 0.059, 0.0186, 0, 0.005, 0.0004, 0.0002, 0.0008, 0.0008, 0.0036, 0.016, 0.0008, 0.005, 0.0022, 0.0026, 0.0406), nrow=13, ncol=13)
+    m <- matrix(c(0.1234, 0, 0, 0.0072, 0.0134, 0.0332, 0, 0, 0, 0.0022, 0.0048, 0.004, 0.0014, 0, 0.0468, 
+                  0, 0.001, 0, 0, 0.0042, 0.0004, 0, 0, 0.0006, 0, 0.0024, 0, 0, 0.0466, 0, 0.0006, 0, 0.0004, 
+                  0, 0.0008, 0, 0, 0.0002, 0, 0.0086, 0.0028, 0, 0.0502, 0.0004, 0.003, 0.0008, 0.0002, 0, 
+                  0.0064, 0.0122, 0.0002, 0.0022, 0.0026, 0, 0.0046, 0, 0.0466, 0.0022, 0.0004, 0.0002, 0.0004,
+                  0.0044, 0, 0.0112, 0.0024, 0.0196, 0, 0, 0.0034, 0.0032, 0.101, 0, 0, 0, 0.001, 0.0234, 
+                  0.0164, 0.0086, 0, 0.0008, 0.0012, 0.0002, 0, 0, 0.0178, 0.001, 0, 0.0006, 0.0002, 0, 0.0004,
+                  0, 0.0004, 0.0002, 0, 0, 0, 0.0044, 0.0062, 0.0008, 0, 0, 0, 0.0006, 0, 0, 0.004, 0, 0, 0,
+                  0.0002, 0.0002, 0.0024, 0, 0, 0, 0, 0.0002, 0.0002, 0.0004, 0.0004, 0.0026, 0, 0.0038, 0.0004,
+                  0, 0.0122, 0.0002, 0.0006, 0.0022, 0.0008, 0.0036, 0, 0.0116, 0, 0.0054, 0.0008, 0.0026,
+                  0, 0.0026, 0.0584, 0.0006, 0.0246, 0.0014, 0, 0.0026, 0, 0.0144, 0.0078, 0.0004, 0.001, 
+                  0.0046, 0.0026, 0.0006, 0.059, 0.0186, 0, 0.005, 0.0004, 0.0002, 0.0008, 0.0008, 0.0036,
+                  0.016, 0.0008, 0.005, 0.0022, 0.0026, 0.0406), 
+                nrow=13, ncol=13)
 
     rownames(m) <- c("W", "B", "L", "WB", "WL", "WA", "BL", "BA", "LA", "WBL", "WBA", "WLA", "WBLA")
     colnames(m) <- c("W", "B", "L", "WB", "WL", "WA", "BL", "BA", "LA", "WBL", "WBA", "WLA", "WBLA")
 
     #reorder matrix
-    col.order <- c("W", "WB", "WBL", "WBA", "WBLA", "WL", "WLA", "WA", "B", "BL", "BA", "L", "LA")
-    row.order <- c(c("W", "WB", "WBL", "WBA", "WBLA", "WL", "WLA", "WA", "B", "BL", "BA", "L", "LA"))
+    col.order <- c("W", "WB", "WA", "WBA", "WLA",  "WL", "WBLA","WBL", "BL", "BA", "LA", "B", "L")
+    row.order <- c("W", "WB", "WA", "WBA", "WLA",  "WL", "WBLA","WBL", "BL", "BA", "LA", "B", "L")
     m <- m[row.order,col.order]
 
-\\
+<br>
 
 **Step Two:** Choose a pretty color scheme (Use color brewer!)
-
-    ## set color representation for specific values of the data distribution
-    quantile_range <- quantile(m, probs = seq(0, 1, 0.20))
 
     ## What color scheme do you want to use?
     ## Choose using the color brewer package
     display.brewer.all(colorblindFriendly = T) #get colorblindfriendly colors
-
-![](Heatmaps_v1_files/figure-gfm/unnamed-chunk-3-1.png)<!-- -->
-
     display.brewer.pal(n = 9, name = "PuRd")# Visualize a single RColorBrewer palette
-
-![](Heatmaps_v1_files/figure-gfm/unnamed-chunk-3-2.png)<!-- -->
-
     brewer.pal(n = 9, name = "PuRd") # Return the hexadecimal color code of the palette
 
-    ## [1] "#F7F4F9" "#E7E1EF" "#D4B9DA" "#C994C7" "#DF65B0" "#E7298A" "#CE1256"
-    ## [8] "#980043" "#67001F"
-
+    ## set color representation for specific values of the data distribution
+    quantile_range <- quantile(m, probs = seq(0, 1, 0.20))
     color_palette <- colorRampPalette(c("#F1EEF6", "#D7B5D8", "#DF65B0", "#DD1C77", "#67001F"))(length(quantile_range) - 1)
 
-\\
+<br>
 
 **Step Three:** Figure out your aesthetic (aka make your plot readable
 and nice to look at)
 
     ## prepare label text (use two adjacent values for range text)
-    label_text <- rollapply(round(quantile_range[-1], 5), width = 2, by = 1, FUN = function(i) paste(i, collapse = " : "))
+    label_text <- rollapply(round(quantile_range[-1], 5), 
+                            width = 2, by = 1, 
+                            FUN = function(i) paste(i, collapse = " : "))
 
     ## discretize matrix; this is the most important step, where for each value we find category of predefined ranges (modify probs argument of quantile to detail the colors)
     mod_m <- matrix(findInterval(m, quantile_range, all.inside = TRUE), nrow = nrow(m))
-    rownames(mod_m) <- c("W", "WB", "WBL", "WBA", "WBLA", "WL", "WLA", "WA", "B", "BL", "BA", "L", "LA")
-    colnames(mod_m) <- c("W", "WB", "WBL", "WBA", "WBLA", "WL", "WLA", "WA", "B", "BL", "BA", "L", "LA")
+    rownames(mod_m) <- c("W", "WB", "WA", "WBA", "WLA",  "WL", "WBLA","WBL", "BL", "BA", "LA", "B", "L")
+    colnames(mod_m) <- c("W", "WB", "WA", "WBA", "WLA",  "WL", "WBLA","WBL", "BL", "BA", "LA", "B", "L")
 
     ## remove background and axis from plot
     theme_change <- theme(
@@ -95,13 +87,13 @@ and nice to look at)
       axis.title.y = element_blank()
     )
 
-\\
+<br>
 
 **Step Four:** Create the heat map using `ggplot2`
 
     # Heatmap 1
     #png("heatmap1.png", width = 800, height = 400)
-    base_size <- 16 #text size
+    base_size <- 10 #text size
     ggplot(melt(mod_m), 
                     aes(x=Var1, y=Var2, fill=factor(value))) + 
       geom_tile(colour="white") + 
@@ -116,18 +108,34 @@ and nice to look at)
             axis.title.x = element_text(size = 18, face = "bold"),
             axis.title.y = element_text(size = 18, face = "bold"))
 
-![](Heatmaps_v1_files/figure-gfm/unnamed-chunk-5-1.png)<!-- -->
+![](Heatmaps_v1_files/figure-gfm/unnamed-chunk-6-1.png)<!-- -->
 
     #dev.off()
 
-### Now repeat for for 2000-2010!
+Now repeat for for 2000-2010!
+-----------------------------
 
 Using this matrix:
 
-    m2 = matrix(c(0.0958,0, 0,0.008, 0.0148, 0.0222, 0, 0, 0, 0.003, 0.006, 0.0046, 0.0022, 0, 0.048, 0, 0.0014, 0, 0, 0.0048, 0.0004, 0, 0, 0.001, 0, 0.0038, 0, 0, 0.0562, 0, 0.0014, 0, 0.0008, 0, 0.001, 0, 0, 0.0006, 0, 0.0062, 0.0016, 0, 0.0462, 0.0004, 0.0018, 0.0006, 0.0002, 0, 0.0056, 0.0096, 0.0002, 0.0022, 0.003, 0, 0.005, 0.0002, 0.0518, 0.0018, 0.0004, 0.0002, 0.0004, 0.0054, 0.0002, 0.0106, 0.0032, 0.0154, 0, 0, 0.0032, 0.0032, 0.0892, 0, 0, 0, 0.0012, 0.0196, 0.0126, 0.0088, 0, 0.0012, 0.0024, 0.0002, 0.0002, 0, 0.028, 0.0012, 0.0002, 0.0014, 0.0004, 0.0002, 0.001, 0, 0.0004, 0.0006, 0, 0, 0, 0.0072, 0.016, 0.0014, 0.0002, 0.0002, 0, 0.0018, 0, 0, 0.0048, 0, 0.0002, 0, 0.0002, 0.0002, 0.0044, 0, 0, 0.0002, 0.0002, 0.0004, 0.0002, 0.0006, 0.0008, 0.0042, 0.0002, 0.0048, 0.0006, 0, 0.0194, 0.0004, 0.0012, 0.0042, 0.0008, 0.0022, 0, 0.0094, 0, 0.0034, 0.0006, 0.0018, 0, 0.0028, 0.0586, 0.0006, 0.0222, 0.0014, 0, 0.0024, 0, 0.0128, 0.0048, 0.0004, 0.0008, 0.003, 0.003, 0.0006, 0.0478, 0.018, 0.0002, 0.0054, 0.0008, 0.0006, 0.0014, 0.001, 0.0054, 0.0164, 0.001, 0.0092, 0.0042, 0.0044, 0.0538), nrow=13, ncol=13)
+    m2 = matrix(c(0.0958,0, 0,0.008, 0.0148, 0.0222, 0, 0, 0, 0.003, 0.006, 0.0046, 0.0022, 0, 0.048, 0, 0.0014, 0, 0, 0.0048,
+                  0.0004, 0, 0, 0.001, 0, 0.0038, 0, 0, 0.0562, 0, 0.0014, 0, 0.0008, 0, 0.001, 0, 0, 0.0006, 0, 0.0062, 0.0016,
+                  0, 0.0462, 0.0004, 0.0018, 0.0006, 0.0002, 0, 0.0056, 0.0096, 0.0002, 0.0022, 0.003, 0, 0.005, 0.0002, 0.0518,
+                  0.0018, 0.0004, 0.0002, 0.0004, 0.0054, 0.0002, 0.0106, 0.0032, 0.0154, 0, 0, 0.0032, 0.0032, 0.0892, 0, 0, 0,
+                  0.0012, 0.0196, 0.0126, 0.0088, 0, 0.0012, 0.0024, 0.0002, 0.0002, 0, 0.028, 0.0012, 0.0002, 0.0014, 0.0004,
+                  0.0002, 0.001, 0, 0.0004, 0.0006, 0, 0, 0, 0.0072, 0.016, 0.0014, 0.0002, 0.0002, 0, 0.0018, 0, 0, 0.0048, 0,
+                  0.0002, 0, 0.0002, 0.0002, 0.0044, 0, 0, 0.0002, 0.0002, 0.0004, 0.0002, 0.0006, 0.0008, 0.0042, 0.0002, 0.0048,
+                  0.0006, 0, 0.0194, 0.0004, 0.0012, 0.0042, 0.0008, 0.0022, 0, 0.0094, 0, 0.0034, 0.0006, 0.0018, 0, 0.0028,
+                  0.0586, 0.0006, 0.0222, 0.0014, 0, 0.0024, 0, 0.0128, 0.0048, 0.0004, 0.0008, 0.003, 0.003, 0.0006, 0.0478,
+                  0.018, 0.0002, 0.0054, 0.0008, 0.0006, 0.0014, 0.001, 0.0054, 0.0164, 0.001, 0.0092, 0.0042, 0.0044, 0.0538),
+                nrow=13, ncol=13)
 
     rownames(m2) <- c("W", "B", "L", "WB", "WL", "WA", "BL", "BA", "LA", "WBL", "WBA", "WLA", "WBLA")
     colnames(m2) <- c("W", "B", "L", "WB", "WL", "WA", "BL", "BA", "LA", "WBL", "WBA", "WLA", "WBLA")
+
+    #reorder matrix
+    col.order <- c("W", "WB", "WA", "WBA", "WLA",  "WL", "WBLA","WBL", "BL", "BA", "LA", "B", "L")
+    row.order <- c("W", "WB", "WA", "WBA", "WLA",  "WL", "WBLA","WBL", "BL", "BA", "LA", "B", "L")
+    m <- m[row.order,col.order]
 
     # Heatmap 2
     #png("heatmap2.png", width = 800, height = 400)
@@ -145,6 +153,6 @@ Using this matrix:
             axis.title.x = element_text(size = 18, face = "bold"),
             axis.title.y = element_text(size = 18, face = "bold"))
 
-![](Heatmaps_v1_files/figure-gfm/unnamed-chunk-8-1.png)<!-- -->
+![](Heatmaps_v1_files/figure-gfm/unnamed-chunk-9-1.png)<!-- -->
 
     #dev.off()

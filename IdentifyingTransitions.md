@@ -17,11 +17,13 @@ In this project I will:
 
 <br>
 
-### **Data**
+Data
+----
 
 I use 1990, 2000, and 2010 Census data drawn from Social Explorer.
 
-### **Sampling**
+Sampling
+--------
 
 *Which southern metropolitan areas do we include? What is the criteria
 of inclusion?*
@@ -31,7 +33,7 @@ data, this data set includes all metro areas in the Southern region.
 Remove micropolitan areas and Philadelphia (which is considered a
 “traditional gateway” of immigration).
 
-    data <- read.csv("AllSouthernMSA_Race.csv", fileEncoding = 'UTF-8-BOM')
+    data <- read.csv("data/AllSouthernMSA_Race.csv", fileEncoding = 'UTF-8-BOM')
 
     data <- data%>%
       filter(!grepl('Micro', NAME)) #remove micropolitan areas
@@ -64,17 +66,6 @@ metro areas that fit my criteria.
     sample <- data %>%
       filter(sample.dum==1) %>%
       select(Geo_CBSA, FIPS, STATE, NAME, TotPop, Latinx, Asian)
-    names(data)
-
-    ##  [1] "FIPS"          "NAME"          "QNAME"         "STATE"        
-    ##  [5] "Geo_SUMLEV"    "Geo_LOGRECNO"  "REGION"        "DIVISION"     
-    ##  [9] "STATEFIPS"     "Geo_CBSA"      "CBSA_Sizecode" "CSA"          
-    ## [13] "Geo_AREALAND"  "Geo_AREAWATR"  "HousUnit"      "Geo_INTPTLAT" 
-    ## [17] "Geo_INTPTLON"  "Geo_LSADC"     "Geo_PARTFLAG"  "Geo_STATENS"  
-    ## [21] "Geo_CSASC"     "Geo_MEMI"      "TotPop"        "White"        
-    ## [25] "Black"         "AIAN"          "Asian"         "NHPI"         
-    ## [29] "Latinx"        "NatB"          "FB"            "sample.dum"
-
     list(sample$Geo_CBSA) #list out the CBSA (identifying numbers)
 
     ## [[1]]
@@ -89,7 +80,8 @@ that are present in them.
 
 <br>
 
-### **Classification**
+Classification
+--------------
 
 *How do I classify neighborhoods (tracts) within each of metro? What is
 the exact criteria to delineate the conceptual racial-ethnic categories
@@ -108,7 +100,7 @@ From this, I filter my dataset usning the list of CBSA’s that we created
 before.
 
     #getting 2010 census tracts using the identified CBSAs
-    data2010 <- read.csv("UStracts_Race2010.csv")
+    data2010 <- read.csv("data/UStracts_Race2010.csv")
     data2010 <- data2010 %>%
       filter(Geo_CBSA %in% 
                c('22900', '47900', '15980', '18880', '23540', 
@@ -194,8 +186,6 @@ Let’s check how many of each type of neighborhood were present in 2010.
            group_by(Ntype) %>%
            summarise(n())
 
-    ## `summarise()` ungrouping output (override with `.groups` argument)
-
     ## # A tibble: 14 x 2
     ##    Ntype `n()`
     ##    <chr> <int>
@@ -222,7 +212,7 @@ Do the same for tracts in 2000 and 1990:
 
     #2000 Neighborhood Type Classification####
 
-    data2000 <- read.csv("Sample2000.2.csv")
+    data2000 <- read.csv("data/Sample2000.csv")
     data2000 <- data2000 %>%
       select("Geo_FIPS","Geo_NAME","Geo_QName", "Geo_STATE","Geo_COUNTY", "Geo_CT",
              "TotPop", "White", "Black", "AIAN", "Asian", "NHPI", "Latinx")
@@ -266,7 +256,7 @@ Do the same for tracts in 2000 and 1990:
                      ifelse(BLA==1, "BLA","WBLA")))))))))))))))
 
     #1990 Neighborhood Type Classification####
-    data1990 <- read.csv("Sample1990.2.csv")
+    data1990 <- read.csv("data/Sample1990.csv")
     data1990 <- data1990 %>%
       select("Geo_FIPS","Geo_NAME","Geo_QName", "Geo_STATE","Geo_COUNTY", "Geo_CT",
              "TotPop", "White", "Black", "AIAN", "Asian", "Latinx")
@@ -309,58 +299,10 @@ Do the same for tracts in 2000 and 1990:
              ifelse(WBL ==1, "WBL", ifelse(WBA==1, "WBA", ifelse(WLA ==1, "WLA",
              ifelse(BLA==1, "BLA","WBLA")))))))))))))))
 
-You can check to see how many of each type of neighborhood was present
-in each year.
-
-    df1990.50 %>%
-      group_by(Ntype) %>%
-      summarise(n())
-
-    ## `summarise()` ungrouping output (override with `.groups` argument)
-
-    ## # A tibble: 13 x 2
-    ##    Ntype `n()`
-    ##    <chr> <int>
-    ##  1 B       695
-    ##  2 BA      160
-    ##  3 BL      279
-    ##  4 L       611
-    ##  5 LA       89
-    ##  6 W      2374
-    ##  7 WA     2210
-    ##  8 WB     1088
-    ##  9 WBA    1394
-    ## 10 WBL     294
-    ## 11 WBLA    981
-    ## 12 WL      947
-    ## 13 WLA    1418
-
-    df2000.50 %>%
-      group_by(Ntype) %>%
-      summarise(n())
-
-    ## `summarise()` ungrouping output (override with `.groups` argument)
-
-    ## # A tibble: 13 x 2
-    ##    Ntype `n()`
-    ##    <chr> <int>
-    ##  1 B       745
-    ##  2 BA      352
-    ##  3 BL      457
-    ##  4 L       755
-    ##  5 LA      126
-    ##  6 W      1962
-    ##  7 WA     1926
-    ##  8 WB      934
-    ##  9 WBA    1286
-    ## 10 WBL     467
-    ## 11 WBLA   1307
-    ## 12 WL     1025
-    ## 13 WLA    1193
-
 <br>
 
-### **Neighborhood Transition Pathways**
+Neighborhood Transition Pathways
+--------------------------------
 
 Now that I’ve classified each tract in each census year, I want to
 combine the neighborhood types into one dataset to chart the
@@ -390,81 +332,42 @@ as large parks or employment areas.
                  48339691700, 48201455300, 13121003700))
 
     dfLong <- as.data.table(dfLong)
+    saveRDS(dfLong, file = "data/dfLong.rds")
 
 Rename the column names and create a “wide” dataset for easier viewing
 of the pathways.
 
     cols <- c("Ntype", "TotPop", "White", "Black", "Asian", "Latinx")
     dfWide <- dcast(dfLong, Geo_FIPS+Geo_NAME+Geo_QName~year, value.var=c(cols))
+    saveRDS(dfWide, file = "data/dfWide.rds")
 
-In another project, I will use this dataset to map out neighborhood
-transitions in certain metro areas more closely!
-
-The following code allows me see the number of certain transition
-pathways from decade to decade:
+The following code allows me see the number of neighborhood types in
+each year and track the number of transition pathways from decade to
+decade:
 
     library(readxl)
     library(writexl)
 
+    #view each year
+    dfWide %>%
+      group_by(Ntype_1990) %>%
+      summarise(n())
+
+    dfWide %>%
+      group_by(Ntype_2000) %>%
+      summarise(n())
+
     #Viewing the pathways####
-    View(dfWide %>%
-           group_by(Ntype_1990) %>%
-           summarise(n()))
-
-    ## `summarise()` ungrouping output (override with `.groups` argument)
-
     Path1 <- dfWide %>%
            group_by(Ntype_1990, Ntype_2000) %>%
            summarise(n())
-
-    ## `summarise()` regrouping output by 'Ntype_1990' (override with `.groups` argument)
-
     Path1
-
-    ## # A tibble: 116 x 3
-    ## # Groups:   Ntype_1990 [13]
-    ##    Ntype_1990 Ntype_2000 `n()`
-    ##    <chr>      <chr>      <int>
-    ##  1 B          B            584
-    ##  2 B          BA             9
-    ##  3 B          BL            50
-    ##  4 B          WB             7
-    ##  5 B          WBA            1
-    ##  6 B          WBLA          42
-    ##  7 BA         B              5
-    ##  8 BA         BA            76
-    ##  9 BA         BL            54
-    ## 10 BA         L              2
-    ## # ... with 106 more rows
 
     #write_xlsx(Path1, 'Analysis_Pt2/Pathtemp.xlsx')
 
     Path2 <- dfWide %>%
       group_by(Ntype_1990, Ntype_2000, Ntype_2010) %>%
       summarise(n())
-
-    ## `summarise()` regrouping output by 'Ntype_1990', 'Ntype_2000' (override with `.groups` argument)
-
     Path2
 
-    ## # A tibble: 576 x 4
-    ## # Groups:   Ntype_1990, Ntype_2000 [116]
-    ##    Ntype_1990 Ntype_2000 Ntype_2010 `n()`
-    ##    <chr>      <chr>      <chr>      <int>
-    ##  1 B          B          B            487
-    ##  2 B          B          BL            46
-    ##  3 B          B          WA             1
-    ##  4 B          B          WB            20
-    ##  5 B          B          WBA           12
-    ##  6 B          B          WBL            1
-    ##  7 B          B          WBLA          17
-    ##  8 B          BA         B              3
-    ##  9 B          BA         BL             6
-    ## 10 B          BL         B              7
-    ## # ... with 566 more rows
-
     #write_xlsx(Path2, 'Analysis_Pt2/Pathtemp.xlsx')
-
-Further projects will create a heatmap of these transitions as well as
-run a multinomial logistic regression to understand what predicts
-certain neighborhood transitions.
