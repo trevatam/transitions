@@ -1,12 +1,75 @@
 Descriptive Statistics
 ================
 Treva Tam
-2/15/2021
+11/26/2019
 
-<br> Read in the data we created in “Identifying Transitions.”
+<br> Read in the data we created in “SampleClassify”.
 
     dfLong <- readRDS("data/dfLong.rds")
     dfWide <- readRDS("data/dfWide.rds")
+
+Create a transition matrix to create tables with.
+
+    #replace neighborhood types with numbers
+    dfLong2 <- dfLong %>%
+      mutate(Ntype = recode(Ntype,
+                            "W" = 1, 
+                            "B" = 2, 
+                            "L" = 3, 
+                            "A" = 4,
+                            "WB" = 5, 
+                            "WL" = 6, 
+                            "WA" = 7, 
+                            "BL" = 8, 
+                            "BA" = 9, 
+                            "LA" = 10,
+                            "WBL" = 11, 
+                            "WBA" = 12, 
+                            "WLA" = 13, 
+                            "BLA"= 14,
+                            "WBLA" = 15))
+    #collapse categories - L,A,LA (all immigrant - 10); WL, WA (white single immigrant - 7); BL, BA (black single immigrant -9); WBL, WBA (semi-global - 12)
+    dfLong2 <- dfLong2 %>%
+      mutate(Ntype = recode(Ntype,
+                            "3" = 10,
+                            "4" = 10,
+                            "6" = 7,
+                            "7" = 7,
+                            "8" = 9,
+                            "9" = 9,
+                            "11" = 12,
+                            "12" = 12))
+    dfLong2 <- as.data.table(dfLong2)
+    cols <- c("Ntype", "TotPop", "White", "Black", "Asian", "Latinx")
+    dfWide2 <- dcast(dfLong2, Geo_FIPS+Geo_QName+Geo_STATE~year, value.var=c(cols))
+
+    #%>%
+    #filter(!Ntype_1990 %in% c(4), !Ntype_2000 %in% c(4),!Ntype_2010 %in% c(4))
+      
+    #filter(!Ntype_1990 %in% c(3,4,10), !Ntype_2000 %in% c(3,4,10),!Ntype_2010 %in% c(3,4,10))
+
+    matrix1 <- dfWide2 %>%
+      group_by(Ntype_1990)%>%
+      count(Ntype_2000)
+    #%>%mutate(Percent = n/sum(n))
+    matrix1 <- matrix1 %>%
+      rename("starttype" = Ntype_1990, "endtype" = Ntype_2000, "freq" = n) %>%
+      mutate(year = 1)
+
+    matrix2 <- dfWide2 %>%
+      group_by(Ntype_2000)%>%
+      count(Ntype_2010)
+    #%>%mutate(Percent = n/sum(n))
+    matrix2 <- matrix2 %>%
+      rename("starttype" = Ntype_2000, "endtype" = Ntype_2010, "freq" = n) %>%
+      mutate(year = 2)
+
+    transmatrix <- rbind(matrix1,matrix2)
+
+    library(tidyr)
+    transmatrix <- transmatrix %>% group_by(year) %>% complete(starttype, endtype, fill = list(freq = 0))
+
+    #write.csv(transmatrix, "transmatrix.csv", row.names = FALSE)
 
 Create a table for the average composition of each neighborhood type by
 census year.
